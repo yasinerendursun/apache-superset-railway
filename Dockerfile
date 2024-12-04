@@ -2,18 +2,25 @@ FROM apache/superset:latest
 
 USER root
 
-RUN pip install mysqlclient psycopg2
+RUN apt-get update && apt-get install -y \
+    pkg-config \
+    default-libmysqlclient-dev \
+    libpq-dev \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
 
-ENV ADMIN_USERNAME $ADMIN_USERNAME
-ENV ADMIN_EMAIL $ADMIN_EMAIL
-ENV ADMIN_PASSWORD $ADMIN_PASSWORD
+RUN pip install mysqlclient psycopg2-binary
+
+ENV ADMIN_USERNAME=${ADMIN_USERNAME}
+ENV ADMIN_EMAIL=${ADMIN_EMAIL}
+ENV ADMIN_PASSWORD=${ADMIN_PASSWORD}
 
 COPY /config/superset_init.sh ./superset_init.sh
 RUN chmod +x ./superset_init.sh
 
 COPY /config/superset_config.py /app/
-ENV SUPERSET_CONFIG_PATH /app/superset_config.py
-ENV SECRET_KEY $SECRET_KEY
+ENV SUPERSET_CONFIG_PATH=/app/superset_config.py
+ENV SECRET_KEY=${SECRET_KEY}
 
 USER superset
 
