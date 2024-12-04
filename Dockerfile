@@ -2,6 +2,11 @@ FROM apache/superset:latest
 
 USER root
 
+# Install system dependencies for mysqlclient
+RUN apt-get update && \
+    apt-get install -y default-libmysqlclient-dev pkg-config build-essential && \
+    rm -rf /var/lib/apt/lists/*
+
 RUN pip install mysqlclient
 
 ENV ADMIN_USERNAME $ADMIN_USERNAME
